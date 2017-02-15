@@ -1,0 +1,29 @@
+
+
+"A (VERY) QUICK PRIMER ON .BASH_PROFILE FOR MAC USERS
+
+There is a hidden file in your Mac’s user directory named .bash_profile. This file is loaded before Terminal loads your shell environment and contains all the startup configuration and preferences for your command line interface. Within it you can change your terminal prompt, change the colors of text, add aliases to functions you use all the time, and so much more."
+https://natelandau.com/my-mac-osx-bash_profile/
+
+
+To add an export to /.bash_profile 
+
+YOU CAN EITHER DO THIS:
+$ echo "export PATH=$SPARK_HOME/bin:$PATH" >> ~/.bash_profile
+$ source ~/.bash_profile #to update the bash profile
+
+OR THIS:
+
+
+open .bash_profile with your favorite tekst editor ($ vi .bash_profile)
+for example you can use 'vi'
+open your terminal and make sure you are in your home directory
+type vi .bash_profile and press enter
+in vi, type i to be able to type
+enter your line
+press escape
+hold shift and press z twice (z z) to save and quit
+that's it!
+
+
+
