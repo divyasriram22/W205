@@ -1,0 +1,8 @@
+Notes to myself (Feb 28th,2017):
+
+1. Go back and fix scripts if I have time later. (They don't work right now)
+2. Had a really hard time finding (and then understanding) background information about the data.
+3. Struggled with subqueries and understanding logic for trying to run complicated queries.
+4. Go back and understand how  e-x-a-c-t-l-y ER diagrams should be made.
+
+
