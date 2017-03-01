@@ -1,14 +1,14 @@
-Which procedures have the greatest variability between hospitals?
+Question: Which procedures have the greatest variability between hospitals?
 
 Table used: Timely and Effective Care Transformed Table (effective_care_table_t)
 
 We group all the scores together by each measure offered. We then calculate the variance in their scores.
-The 10 procedures with the 
+The best hopsitals are listed in descending order of variance in procedures (top 10 greatest).
 
 	SET hive.cli.print.header=true;
 
 	SELECT x.measure_id, variance(x.score) as var_measure, COUNT(*) as measure_count
-	FROM effective_care_table_t x
+	FROM effective_care_table_t x 
 	GROUP by x.measure_id
 	ORDER BY var_measure DESC
 	LIMIT 10;

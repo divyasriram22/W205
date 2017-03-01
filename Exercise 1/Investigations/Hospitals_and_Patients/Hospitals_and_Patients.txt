@@ -1,4 +1,8 @@
-Are average scores for hospital quality or procedural variability correlated with patient survey responses?
+Question: Are average scores for hospital quality or procedural variability correlated with patient survey responses?
+
+Tables used:
+	Timely and Effective Care Transformed Table (effective_care_table_t)
+	hvbp_hcahps_11_10_2016 (survey_responses_table_t)
 
 This website here (http://www.hcahpsonline.org/files/HCAHPS%20Fact%20Sheet%20May%202012.pdf) describes the base_score in the surveys as
 a total score, tallied from each of the 8 individual aspects of the survey that evaluated the hospitals.

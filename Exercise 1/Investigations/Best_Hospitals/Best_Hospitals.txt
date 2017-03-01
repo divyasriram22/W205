@@ -1,8 +1,12 @@
-SET hive.cli.print.header=true;
+Question: What hospitals are models of high-quality care? That is, which hospitals have the most consistently high scores for a variety of procedures.
+
+Table used: Timely and Effective Care Transformed (effective_care_table_t)
 
 It's important to note here that we are evaluating high-quality care based on a variety of procedures.
 
 “consistently high scores” implies the least amount of variance in scores
+
+	SET hive.cli.print.header=true;	
 
 	SELECT AVG (var_score) FROM 
 		(SELECT provider_id, variance(score) as var_score 
@@ -22,7 +26,7 @@ Variety of procedures: want hospitals that offer a greater number of procedures.
 
 
 
-It is important that the best hospitals have a lower variance than that of the calculated average: 5400, and more procedures than the avg procedures for the hospitals: 22.  
+It is important that the best hospitals have a lower variance than that of the calculated average: 5400, and more procedures than the avg procedures for the hospitals: 22. Within the hospitals that have a lower variance in their many procedures, we will order their average score among all their procedures in descending order and look at the top 10 hopsitals.
 
 
 	SELECT x.* FROM (SELECT hospital_name, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,  
@@ -31,6 +35,8 @@ It is important that the best hospitals have a lower variance than that of the c
 
 
 **Note, the average variance and scores are marked by hard coded values in this query because I was lazy and this was easy. These averages will have to be recalculated each time a new data set is presented or values are changed (cannot universally use the query as is).
+
+
 
 The results for the hospitals with consistent, high quality care are the following: 
 
