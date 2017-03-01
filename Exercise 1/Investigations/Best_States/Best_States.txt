@@ -1,0 +1,86 @@
+
+SET hive.cli.print.header=true;
+
+Similar to question before (best hospitals), we will evaluate high quality care based on least variance and number of procedures offered.
+
+“consistently high scores” implies the least amount of variance in scores
+
+	SELECT AVG (var_score) FROM 
+		(SELECT state, variance(score) as var_score 
+		FROM effective_care_table_t GROUP BY state) a;
+
+	Looks like the average variance in scores is about 8065.82
+
+
+
+Variety of procedures: want hospitals that offer a greater number of procedures. The following query will determine the average number of procedures offered by these hospitals.
+
+	SELECT avg(num_procedures) FROM 
+		(SELECT state, COUNT (*) as num_procedures 
+		FROM effective_care_table_t GROUP BY state) a;
+		
+	Average number of procedures offered by hospitals is 1888.46
+
+
+
+It is important that the best hospitals have a lower variance than that of the calculated average: 8065.82, and more procedures than the avg procedures for the hospitals: 1888.46 .  
+
+	SELECT x.* FROM (SELECT state, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,  
+	COUNT (measure_id) as num_procedures FROM effective_care_table_t WHERE score IS NOT NULL GROUP BY state) x 
+	WHERE x.num_procedures > 1888.46 and x.var_score < 8065.82 ORDER BY x.avg_score DESC LIMIT 10; 
+
+*Note 1: scores without values (NULL) were not used to calculate -- this is obvious for avg variance but it important when counting a procedure is offered at the hospital or not. 
+
+**Note 2: the average variance and scores are marked by hard coded values in this query because I was lazy and this was easy. These averages will have to be recalculated each time a new data set is presented or values are changed (cannot universally use the query as is).
+
+The results for the states with consistent, high quality care are the following:
+x.state x.agg_score     x.var_score     x.avg_score     x.num_procedures
+FL      197397  6300.190616785637       85.93687418371789       2297
+PA      170032  5097.637903775803       83.67716535433071       2032
+IL      165692  5553.12379276144        83.51411290322581       1984
+TX      316316  5553.757979364411       80.7752808988764        3916
+OH      149819  4570.972869254088       78.5626638699528        1907
+
+
+
+The query above (with a qualifier for both number of procedure > avg and variance < avg caused only 5 states to show up.
+
+The query below, removing the requirement that the states offer more procedures than the average number, allows for the top 10 states to be listed:
+
+	
+	SELECT x.* FROM (SELECT state, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,  
+	COUNT (measure_id) as num_procedures FROM effective_care_table_t WHERE score IS NOT NULL GROUP BY state) x 
+	WHERE x.var_score < 8065.82 ORDER BY x.avg_score DESC LIMIT 10; 
+
+The other results for the states with consistent, high quality care are the following: 
+
+x.state	x.agg_score	x.var_score	x.avg_score	x.num_procedures
+RI	13852	6274.346488888893	92.34666666666666	150
+MA	77357	7144.86424077742	91.22287735849056	848
+CT	35273	7352.479235483812	90.21227621483376	391
+AZ	70988	6430.882673605026	87.2088452088452	814
+GA	133502	6780.8024614066335	86.01932989690722	1552
+FL	197397	6300.190616785637	85.93687418371789	2297
+NM	35164	6894.764687685899	85.76585365853659	410
+AK	9851	7026.537164461246	85.6608695652174	115
+VT	8473	5409.010305070913	85.58585858585859	99
+ME	29728	5923.609247871529	85.18051575931231	349
+Time taken: 94.406 seconds, Fetched: 10 row(s)
+
+
+
+
+	SELECT x.* FROM (SELECT state, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,
+        COUNT (measure_id) as num_procedures FROM effective_care_table_t WHERE score IS NOT NULL GROUP BY state) x
+        WHERE x.num_procedures > 1888.46 ORDER BY x.avg_score DESC LIMIT 10;
+
+
+x.state	x.agg_score	x.var_score	x.avg_score	x.num_procedures
+NY	207728	11230.030699286324	96.21491431218156	2159
+CA	359437	10053.423748768062	95.69675186368477	3756
+FL	197397	6300.190616785637	85.93687418371789	2297
+PA	170032	5097.637903775803	83.67716535433071	2032
+IL	165692	5553.12379276144	83.51411290322581	1984
+TX	316316	5553.757979364411	80.7752808988764	3916
+OH	149819	4570.972869254088	78.5626638699528	1907
+Time taken: 99.423 seconds, Fetched: 7 row(s)

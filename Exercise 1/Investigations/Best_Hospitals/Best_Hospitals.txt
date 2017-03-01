@@ -1,0 +1,50 @@
+SET hive.cli.print.header=true;
+
+It's important to note here that we are evaluating high-quality care based on a variety of procedures.
+
+“consistently high scores” implies the least amount of variance in scores
+
+	SELECT AVG (var_score) FROM 
+		(SELECT provider_id, variance(score) as var_score 
+		FROM effective_care_table_t GROUP BY provider_id) a;
+
+	Looks like the average variance in scores is about 5400
+
+
+
+Variety of procedures: want hospitals that offer a greater number of procedures. The following query will determine the average number of procedures offered by these hospitals.
+
+	SELECT avg(num_procedures) FROM 
+		(SELECT provider_id, COUNT (*) as num_procedures 
+		FROM effective_care_table_t GROUP BY provider_id);
+		
+	Average number of procedures offered by hospitals is 22
+
+
+
+It is important that the best hospitals have a lower variance than that of the calculated average: 5400, and more procedures than the avg procedures for the hospitals: 22.  
+
+
+	SELECT x.* FROM (SELECT hospital_name, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,  
+	COUNT (measure_id) as num_procedures FROM effective_care_table_t WHERE score IS NOT NULL GROUP BY hospital_name) x 
+	WHERE x.num_procedures > 22 and x.var_score < 5400 ORDER BY x.avg_score DESC LIMIT 10; 
+
+
+**Note, the average variance and scores are marked by hard coded values in this query because I was lazy and this was easy. These averages will have to be recalculated each time a new data set is presented or values are changed (cannot universally use the query as is).
+
+The results for the hospitals with consistent, high quality care are the following: 
+
+x.hospital_name			x.agg_score	x.var_score	x.avg_score	x.num_procedures
+ST ANTHONY HOSPITAL		3174	5325.3012244897955	90.68571428571428	35
+GOOD SHEPHERD MEDICAL CENTER	1988	4855.463137996219	86.43478260869566	23
+ST ALEXIUS MEDICAL CENTER	2184	4723.615384615384	84.0			26
+NORTHSIDE HOSPITAL		2345	4516.616071428571	83.75			28
+ST MARYS REGIONAL MEDICAL CENTER2492	5249.662222222222	83.06666666666666	30
+ST MARY'S MEDICAL CENTER	5113	5037.184443288239	82.46774193548387	62
+MARSHALL MEDICAL CENTER		2043	5095.1616		81.72			25
+ST LUKES HOSPITAL		3754	3962.3686200378074	81.6086956521739	46
+HARRISON MEMORIAL HOSPITAL	2276	4152.918367346939	81.28571428571429	28
+ST CLARE HOSPITAL		2177	4613.27023319616	80.62962962962963	27
+Time taken: 101.608 seconds, Fetched: 10 row(s)
+
+

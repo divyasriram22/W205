@@ -1,0 +1,62 @@
+Are average scores for hospital quality or procedural variability correlated with patient survey responses?
+
+This website here (http://www.hcahpsonline.org/files/HCAHPS%20Fact%20Sheet%20May%202012.pdf) describes the base_score in the surveys as
+a total score, tallied from each of the 8 individual aspects of the survey that evaluated the hospitals.
+
+	
+The following query joins the two tables effective_care and survey_reponses and groups the hospitals by their base and consistency scores from the surveys and the general score from the effective_care table and the results are ordered from highest general score to the lowest. We view the top 25 to seea slightly larger snapshot of what's happening.
+
+	SELECT hospital_name, score, x.base_score as base_score, x.consistency_score as cons_score
+	FROM survey_responses_table_t x
+	INNER JOIN effective_care_table_t y
+	ON y.provider_id = x.provider_id
+	WHERE x.consistency_score IS NOT NULL and x.base_score IS NOT NULL and y.score IS NOT NULL 
+	GROUP BY x.hospital_name, y.provider_id, x.consistency_score, x.base_score, y.score
+	ORDER BY y.score DESC
+	LIMIT 25;
+
+
+
+hospital_name					score	base_score	cons_score
+COMMUNITY REGIONAL MEDICAL CENTER		1042	4		10
+CLOVIS COMMUNITY MEDICAL CENTER			840	20		17
+KERN MEDICAL CENTER				828	1		6
+LAREDO MEDICAL CENTER				820	4		12
+KINGS COUNTY HOSPITAL CENTER			809	8		4
+ST ROSE DOMINICAN HOSPITALS - ROSE DE LIMA CAMPUS800	5		6
+MIDTOWN MEDICAL CENTER				783	10		15
+ELMHURST HOSPITAL CENTER			773	11		6
+BROOKHAVEN MEMORIAL HOSPITAL MEDICAL CENTER	746	3		7
+ST FRANCIS HOSPITAL, ROSLYN			740	36		18
+SPRING VALLEY HOSPITAL MEDICAL CENTER		722	2		8
+MERCY HOSPITAL					713	9		8
+LOMA LINDA UNIVERSITY MEDICAL CENTER		696	8		13
+BROOKLYN HOSPITAL CENTER AT DOWNTOWN CAMPUS	694	1		8
+NEW YORK-PRESBYTERIAN HOSPITAL			692	3		14
+HARRIS HEALTH SYSTEM				692	3		15
+NEWYORK-PRESBYTERIAN/QUEENS			690	3		13
+NEWARK BETH ISRAEL MEDICAL CENTER		677	16		15
+GRADY MEMORIAL HOSPITAL				671	7		14
+RIVERSIDE UNIVERSITY HEALTH SYSTEM-MEDICAL CENTER670	0		4
+COMMUNITY REGIONAL MEDICAL CENTER		668	4		10
+LAC/HARBOR-UCLA MED CENTER			662	1		4
+DESERT SPRINGS HOSPITAL				653	15		7
+PROVIDENCE HOSPITAL				648	0		5
+VICTOR VALLEY GLOBAL MEDICAL CENTER		644	0		3
+Time taken: 125.041 seconds, Fetched: 25 row(s)
+
+
+
+Let's take a look at how the base_scores are distributed. The median value for base_scores is: 15
+	
+	SELECT percentile(cast(base_score as BIGINT), 0.5) FROM survey_responses_table_t;
+
+The median value for base_scores is 15. A cursory glance at the first query we ran, we would expect that base_score values of 15 and higher (the top 50%) would be associated with the higher general scores for the hospitals, but that was not necessarily the case. In fact, majority of the base_scores for the top general score hospitals were in the bottom half of the base_score values. From this particular query, it seems that average scores for hospital quality or procedural variability are not necessarily correlated with patient survey responses.
+
+
+
+Note: In previous investigations (like the query from best hospitals- show below), I was able to include the average scores based on number of procedures and variance, but I did not know how to incorporate these two factors into my query above so I used avg score as is. This is not correct, I am aware. 
+
+	SELECT x.* FROM (SELECT hospital_name, sum(score) as agg_score,  variance(score) as var_score, avg(score) as avg_score,
+        COUNT (measure_id) as num_procedures FROM effective_care_table_t WHERE score IS NOT NULL GROUP BY hospital_name) x
+        WHERE x.num_procedures > 22 and x.var_score < 5400 ORDER BY x.avg_score DESC LIMIT 10;
