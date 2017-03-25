@@ -1,0 +1,287 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "PART 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 1\n",
+    "\n",
+    "How many rows are missing a value in the \"State\" column? Explain how you came up with \n",
+    "the number.\n",
+    "\n",
+    "---\n",
+    "\n",
+    "Answer:\n",
+    "\n",
+    "There are 5377 such rows.\n",
+    "\n",
+    "(When you look at the text facet for the state column, you can see that there are 62\n",
+    "possible values in the state column. One of them is blank, or entries that are missing a value\n",
+    "in the \"state\" column.)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 2:\n",
+    "\n",
+    "How many rows with missing ZIP codes do you have?\n",
+    "\n",
+    "----\n",
+    "\n",
+    "Answer:\n",
+    "There are 4363 rows that are blank in the zip code column.\n",
+    "\n",
+    "\n",
+    "(Not all area codes are valid. Row 151 had no Zip code. Post \"fill down\", it had a value of \n",
+    " 75043. If the data is organized in some fashion according to the column to which we apply \n",
+    " the \"fill down\" function, then it could possibily be a decent way of filling in value. If\n",
+    "the data is disroganized and not in order of that column, then you are essentially filling in\n",
+    "random values for that cell.)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 3:\n",
+    "    \n",
+    "*If you consider all ZIP codes less than 99999 to be valid, how many valid and invalid\n",
+    "ZIP codes do you have, respectively?\n",
+    "\n",
+    "---\n",
+    "\n",
+    "There are 345175 valid zip codes and 39323 invalid zip codes, blank ones or ones with the value of 99999."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "PART 2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 4:\n",
+    "\n",
+    "Change the radius to 3.0. What happens? Do you want to merge any of the resulting matches?\n",
+    "\n",
+    "---\n",
+    "\n",
+    "These are the results I get (radius 3, blocksize 6):\n",
+    "    \n",
+    "California(84 rows)\n",
+    "Cailfornia(1 rows)\n",
+    "\n",
+    "Alaska(791 rows)\n",
+    "alaska(4 rows)\n",
+    "\n",
+    "Tajikistan(36 rows)\n",
+    "Pakistan(25 rows)\n",
+    "\n",
+    "Indonesia(797 rows)\n",
+    "Micronesia(8 rows)\n",
+    "\n",
+    "I want to merge the rows for California and Alaska."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 5:\n",
+    "\n",
+    "Change the block size to 2. Give two examples of new clusters that may be worth merging.\n",
+    "\n",
+    "---\n",
+    "\n",
+    "These examples of 2 clusters I would not want to merge (radius 2, blocksize 6):\n",
+    "    \n",
+    "Canada(33 rows)\n",
+    "Nevada(24 rows)\n",
+    "Panama(18 rows)\n",
+    "Candaa(2 rows)\n",
+    "Uganda(1 rows)\n",
+    "Cnaada(1 rows)\n",
+    "\n",
+    "\n",
+    "\n",
+    "Algeria(11 rows)\n",
+    "Romania(10 rows)\n",
+    "alaska(4 rows)\n",
+    "Tanzania(2 rows)\n",
+    "Albania(1 rows)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "Submission 6:\n",
+    "    \n",
+    "Explain in words what happens when you cluster the \"place\" column, and why you think that happened. What additional functionality could OpenRefine provide to possibly deal with the situation?\n",
+    "\n",
+    "Hint: you may want to cancel the run.\n",
+    "    \n",
+    "    \n",
+    "---\n",
+    "\n",
+    "Well first of all, it took forever to run. And then I read the hint, and now understand it will likely\n",
+    "never finish running? \n",
+    "\n",
+    "Edit: post finishing part 3 of this lab, the nearest neighbors clustering did in fact finish running and I got \n",
+    "some results! (lots of clusters that really should have been combined into a bigger block, but were separated\n",
+    "on the basis of the number in the beginning (street number). Not an efficient way to cluster).\n",
+    "    \n",
+    "\n",
+    "I think there are too many factors to consider and too much for the knn algorithm to function.\n",
+    "An additional functionality could be one where you can specify what portion of the text in that column you want to\n",
+    "use to compare with so the knn algorithm can use just that one feature (part of the text, ex: state) to run the algorithm."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "PART 3:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "I didn't want to spend the time developing the algorithm/code in python so I googled it and added the \"print (distances)\" line! \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1, 0, 1, 2, 3, 4, 5, 6, 7, 8]\n",
+      "[2, 1, 0, 1, 2, 3, 4, 5, 6, 7]\n",
+      "[3, 2, 1, 1, 2, 3, 4, 5, 6, 7]\n",
+      "[4, 3, 2, 2, 1, 2, 3, 4, 5, 6]\n",
+      "[5, 4, 3, 3, 2, 1, 2, 3, 4, 5]\n",
+      "[6, 5, 4, 4, 3, 2, 1, 2, 3, 4]\n",
+      "[7, 6, 5, 5, 4, 3, 2, 2, 2, 3]\n",
+      "[8, 7, 6, 6, 5, 4, 3, 3, 3, 2]\n",
+      "[9, 8, 7, 7, 6, 5, 4, 4, 4, 3]\n"
+     ]
+    }
+   ],
+   "source": [
+    "levenshteinDistance(\"gumbarrel\", \"gunbarell\")\n",
+    "\n",
+    "def levenshteinDistance(s1, s2):\n",
+    "    if len(s1) > len(s2):\n",
+    "        s1, s2 = s2, s1\n",
+    "\n",
+    "    distances = range(len(s1) + 1)\n",
+    "    for i2, c2 in enumerate(s2):\n",
+    "        distances_ = [i2+1]\n",
+    "        for i1, c1 in enumerate(s1):\n",
+    "            if c1 == c2:\n",
+    "                distances_.append(distances[i1])\n",
+    "            else:\n",
+    "                distances_.append(1 + min((distances[i1], distances[i1 + 1], distances_[-1])))\n",
+    "        distances = distances_\n",
+    "        print (distances)\n",
+    "        \n",
+    "    return distances[-1]\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1, 0, 1, 2, 3, 4, 5, 6, 7, 8]\n",
+      "[2, 1, 0, 1, 2, 3, 4, 5, 6, 7]\n",
+      "[3, 2, 1, 1, 2, 3, 4, 5, 6, 7]\n",
+      "[4, 3, 2, 2, 1, 2, 3, 4, 5, 6]\n",
+      "[5, 4, 3, 3, 2, 1, 2, 3, 4, 5]\n",
+      "[6, 5, 4, 4, 3, 2, 1, 2, 3, 4]\n",
+      "[7, 6, 5, 5, 4, 3, 2, 2, 2, 3]\n",
+      "[8, 7, 6, 6, 5, 4, 3, 3, 3, 2]\n",
+      "[9, 8, 7, 7, 6, 5, 4, 4, 4, 3]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "3"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "levenshteinDistance(\"gumbarrel\", \"gunbarell\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
